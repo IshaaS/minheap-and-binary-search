@@ -1,49 +1,68 @@
 import java.util.*;
 
-public class Main {
+class MinHeap {
+    
+    private int[] heapArray;
+    private int capacity;
+    private int current_heap_size;
 
-    // Function to insert a new element into the min-heap
-    public static void insertMinHeap(int[] heap, int size,
-                                     int value)
-    {
-        // Add the new element to the end of the heap
-        heap[size] = value;
-        // Get the index of the last element
-        int index = size;
-        // Compare the new element with its parent and swap
-        // if necessary
-        while (index > 0
-               && heap[(index - 1) / 2] > heap[index]) {
-            swap(heap, index, (index - 1) / 2);
-            // Move up the tree to the parent of the current
-            // element
-            index = (index - 1) / 2;
+    public MinHeap(int n) {
+        capacity = n;
+        heapArray = new int[capacity];
+        current_heap_size = 0;
+    }
+    
+    private void swap(int[] arr, int a, int b) {
+        int temp = arr[a];
+        arr[a] = arr[b];
+        arr[b] = temp;
+    }
+
+    private int parent(int key) {
+        return (key - 1) / 2;
+    }
+    
+    private int left(int key) {
+        return 2 * key + 1;
+    }
+    
+    private int right(int key) {
+        return 2 * key + 2;
+    }
+    
+    public boolean insertKey(int key) {
+        if (current_heap_size == capacity) {
+            return false;
+        }
+        int i = current_heap_size;
+        heapArray[i] = key;
+        current_heap_size++;
+        
+        while (i != 0 && heapArray[i] < heapArray[parent(i)]) {
+            swap(heapArray, i, parent(i));
+            i = parent(i);
+        }
+        return true;
+    }
+    
+    public int getMin() {
+        return heapArray[0];
+    }
+
+    private void MinHeapify(int key) {
+        int l = left(key);
+        int r = right(key);
+
+        int smallest = key;
+        if (l < current_heap_size && heapArray[l] < heapArray[smallest]) {
+            smallest = l;
+        }
+        if (r < current_heap_size && heapArray[r] < heapArray[smallest]) {
+            smallest = r;
+        }
+
+        if (smallest != key) {
+            swap(heapArray, key, smallest);
+            MinHeapify(smallest);
         }
     }
-
-    // Function to swap two elements in an array
-    public static void swap(int[] arr, int i, int j)
-    {
-        int temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-    }
-
-    // Main function to test the insertMinHeap function
-    public static void main(String[] args)
-    {
-        int[] heap = new int[6];
-        int[] values = { 10, 7, 11, 5, 4, 13 };
-        int size = 0;
-        for (int i = 0; i < values.length; i++) {
-            insertMinHeap(heap, size, values[i]);
-            size++;
-            System.out.print("Inserted " + values[i]
-                             + " into the min-heap: ");
-            for (int j = 0; j < size; j++) {
-                System.out.print(heap[j] + " ");
-            }
-            System.out.println();
-        }
-    }
-}
